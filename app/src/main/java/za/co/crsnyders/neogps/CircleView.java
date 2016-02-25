@@ -18,6 +18,7 @@ public class CircleView extends View {
     private List<Dot> dots = new ArrayList<>();
     public CircleView(Context context) {
         super(context);
+
     }
 
     public void addDot(Dot dot){

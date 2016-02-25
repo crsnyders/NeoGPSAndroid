@@ -12,6 +12,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -19,6 +20,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import static za.co.crsnyders.neogps.Utils.hcl2rgb;
@@ -64,39 +66,6 @@ public class ColourPicker extends AppCompatActivity {
                         .setAction("Action", null).show();
             }
         });
-
-        int numberOfLeds = 24;
-        double step = (2*Math.PI)/numberOfLeds;
-        Display display = getWindowManager().getDefaultDisplay();
-
-        Point size = new Point();
-        display.getSize(size);
-        display.getSize(size);
-        int width = size.x;
-        int height = size.y;
-        int ledSize = 20;
-        int radius = 550;
-        CircleView circleView = new CircleView(this);
-        for(int i =0; i< numberOfLeds;i++){
-
-
-            long x = Math.round(width/2 + radius * Math.cos(i * step) - ledSize/2);
-            long y = Math.round(height/2 + radius * Math.sin(i * step) - ledSize/2);
-
-            /*double x = (Math.sin(i * step)*width)/2;
-            double y = (Math.cos(i * step)*height)/2;*/
-            Point p = new Point();
-            p.set((int) x, (int) y);
-            double degrees = Math.toDegrees(i * step);
-            int[] rgb = hcl2rgb(degrees/360,100,100,0);
-            System.out.println(rgb);
-            circleView.addDot(new Dot(Color.rgb(rgb[0],rgb[1],rgb[2]), p));
-
-        }
-        setContentView(circleView);
-
-
-        //setContentView(new CircleView(this));
     }
 
 
@@ -132,6 +101,7 @@ public class ColourPicker extends AppCompatActivity {
          */
         private static final String ARG_SECTION_NUMBER = "section_number";
 
+        private View rootView;
         public PlaceholderFragment() {
         }
 
@@ -150,10 +120,45 @@ public class ColourPicker extends AppCompatActivity {
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_colour_picker, container, false);
-            TextView textView = (TextView) rootView.findViewById(R.id.section_label);
-            textView.setText(getString(R.string.section_format, getArguments().getInt(ARG_SECTION_NUMBER)));
-            return rootView;
+            this.rootView = inflater.inflate(R.layout.fragment_colour_picker, container, false);
+            makeDots();
+
+            return this.rootView;
+        }
+
+        private void makeDots(){
+            RelativeLayout relativeLayout = (RelativeLayout)this.rootView.findViewById(R.id.circleLayout);
+            relativeLayout.removeAllViews();
+
+            int numberOfLeds = 24;
+            double step = (2*Math.PI)/numberOfLeds;
+
+            DisplayMetrics metrics = this.rootView.getContext().getResources().getDisplayMetrics();
+            int width = metrics.widthPixels;
+            int height = metrics.heightPixels;
+
+            int ledSize = 20;
+            int radius = 550;
+            CircleView circleView = new CircleView(rootView.getContext());
+            for(int i =0; i< numberOfLeds;i++){
+
+
+                long x = Math.round(width/2 + radius * Math.cos(i * step) - ledSize/2);
+                long y = Math.round(height/2 + radius * Math.sin(i * step) - ledSize/2);
+
+            //double x = (Math.sin(i * step)*width)/2;
+            //double y = (Math.cos(i * step)*height)/2;
+                Point p = new Point();
+                p.set((int) x, (int) y);
+                double degrees = Math.toDegrees(i * step);
+                int[] rgb = hcl2rgb(degrees/360,100,100,0);
+                System.out.println(rgb);
+                circleView.addDot(new Dot(Color.rgb(rgb[0],rgb[1],rgb[2]), p));
+
+            }
+
+            relativeLayout.addView(circleView);
+//            setContentView(circleView);
         }
     }
 
