@@ -20,6 +20,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -102,6 +105,8 @@ public class ColourPicker extends AppCompatActivity {
         private static final String ARG_SECTION_NUMBER = "section_number";
 
         private View rootView;
+        private FrameLayout relativeLayout;
+        private EditText ledNumber;
         public PlaceholderFragment() {
         }
 
@@ -121,16 +126,25 @@ public class ColourPicker extends AppCompatActivity {
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
             this.rootView = inflater.inflate(R.layout.fragment_colour_picker, container, false);
+            this.relativeLayout = (FrameLayout)this.rootView.findViewById(R.id.circleLayout);
+            this.ledNumber = (EditText) this.rootView.findViewById(R.id.ledNumber);
+            Button go  = (Button)this.rootView.findViewById(R.id.go);
+            go.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    makeDots();
+                }
+            });
             makeDots();
 
             return this.rootView;
         }
 
         private void makeDots(){
-            RelativeLayout relativeLayout = (RelativeLayout)this.rootView.findViewById(R.id.circleLayout);
+
             relativeLayout.removeAllViews();
 
-            int numberOfLeds = 24;
+            int numberOfLeds = Integer.parseInt(ledNumber.getText().toString());
             double step = (2*Math.PI)/numberOfLeds;
 
             DisplayMetrics metrics = this.rootView.getContext().getResources().getDisplayMetrics();
@@ -143,8 +157,8 @@ public class ColourPicker extends AppCompatActivity {
             for(int i =0; i< numberOfLeds;i++){
 
 
-                long x = Math.round(width/2 + radius * Math.cos(i * step) - ledSize/2);
-                long y = Math.round(height/2 + radius * Math.sin(i * step) - ledSize/2);
+                long x = Math.round(width/2 + radius * Math.cos(i * step) - ledSize*3);
+                long y = Math.round(height*0.30 + radius * Math.sin(i * step) - ledSize/2);
 
             //double x = (Math.sin(i * step)*width)/2;
             //double y = (Math.cos(i * step)*height)/2;
@@ -152,7 +166,6 @@ public class ColourPicker extends AppCompatActivity {
                 p.set((int) x, (int) y);
                 double degrees = Math.toDegrees(i * step);
                 int[] rgb = hcl2rgb(degrees/360,100,100,0);
-                System.out.println(rgb);
                 circleView.addDot(new Dot(Color.rgb(rgb[0],rgb[1],rgb[2]), p));
 
             }
