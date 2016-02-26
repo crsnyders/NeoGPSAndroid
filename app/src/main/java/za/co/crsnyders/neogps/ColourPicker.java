@@ -141,10 +141,14 @@ public class ColourPicker extends AppCompatActivity {
         }
 
         private void makeDots(){
+            int numberOfLeds = Integer.parseInt(ledNumber.getText().toString());
+        }
+
+        private void drawDots(){
 
             relativeLayout.removeAllViews();
 
-            int numberOfLeds = Integer.parseInt(ledNumber.getText().toString());
+
             double step = (2*Math.PI)/numberOfLeds;
 
             DisplayMetrics metrics = this.rootView.getContext().getResources().getDisplayMetrics();
@@ -171,8 +175,9 @@ public class ColourPicker extends AppCompatActivity {
             }
 
             relativeLayout.addView(circleView);
-//            setContentView(circleView);
         }
+
+
     }
 
     /**
