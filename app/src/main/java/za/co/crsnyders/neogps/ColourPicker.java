@@ -24,7 +24,11 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
+import android.widget.SeekBar;
 import android.widget.TextView;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static za.co.crsnyders.neogps.Utils.hcl2rgb;
 
@@ -97,7 +101,7 @@ public class ColourPicker extends AppCompatActivity {
     /**
      * A placeholder fragment containing a simple view.
      */
-    public static class PlaceholderFragment extends Fragment {
+    public static class PlaceholderFragment extends Fragment implements View.OnClickListener{
         /**
          * The fragment argument representing the section number for this
          * fragment.
@@ -107,6 +111,14 @@ public class ColourPicker extends AppCompatActivity {
         private View rootView;
         private FrameLayout relativeLayout;
         private EditText ledNumber;
+        private List<Dot> dots;
+        private SeekBar seekBar;
+        private int width;
+        private int height;
+        private int ledSize;
+        private int radius;
+
+        private PostService postService;
         public PlaceholderFragment() {
         }
 
@@ -123,61 +135,106 @@ public class ColourPicker extends AppCompatActivity {
         }
 
         @Override
+        public void onClick(View v) {
+            this.dots = makeRaintbowDots();
+            drawDots(this.dots);
+        }
+
+        @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
             this.rootView = inflater.inflate(R.layout.fragment_colour_picker, container, false);
             this.relativeLayout = (FrameLayout)this.rootView.findViewById(R.id.circleLayout);
             this.ledNumber = (EditText) this.rootView.findViewById(R.id.ledNumber);
+            this.seekBar = (SeekBar)this.rootView.findViewById(R.id.seekBar);
+            DisplayMetrics metrics = this.rootView.getContext().getResources().getDisplayMetrics();
+            this.width = metrics.widthPixels;
+            this.height = metrics.heightPixels;
+
+            this.ledSize = 20;
+            this.radius = 550;
             Button go  = (Button)this.rootView.findViewById(R.id.go);
-            go.setOnClickListener(new View.OnClickListener() {
+            go.setOnClickListener(this);
+            postService = new PostService();
+            this.seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
                 @Override
-                public void onClick(View v) {
-                    makeDots();
+                public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                    drawDots(dots);
+                }
+
+                @Override
+                public void onStartTrackingTouch(SeekBar seekBar) {
+
+                }
+
+                @Override
+                public void onStopTrackingTouch(SeekBar seekBar) {
+
                 }
             });
-            makeDots();
+            dots = makeRaintbowDots();
+            this.drawDots(dots);
 
             return this.rootView;
         }
 
-        private void makeDots(){
-            int numberOfLeds = Integer.parseInt(ledNumber.getText().toString());
-        }
+        private List<Dot> makeRaintbowDots(){
 
-        private void drawDots(){
+            List<Dot> dots  = new ArrayList<>();
+            for(int i =0; i< getLedCount();i++){
 
-            relativeLayout.removeAllViews();
-
-
-            double step = (2*Math.PI)/numberOfLeds;
-
-            DisplayMetrics metrics = this.rootView.getContext().getResources().getDisplayMetrics();
-            int width = metrics.widthPixels;
-            int height = metrics.heightPixels;
-
-            int ledSize = 20;
-            int radius = 550;
-            CircleView circleView = new CircleView(rootView.getContext());
-            for(int i =0; i< numberOfLeds;i++){
-
-
-                long x = Math.round(width/2 + radius * Math.cos(i * step) - ledSize*3);
-                long y = Math.round(height*0.30 + radius * Math.sin(i * step) - ledSize/2);
-
-            //double x = (Math.sin(i * step)*width)/2;
-            //double y = (Math.cos(i * step)*height)/2;
-                Point p = new Point();
-                p.set((int) x, (int) y);
-                double degrees = Math.toDegrees(i * step);
-                int[] rgb = hcl2rgb(degrees/360,100,100,0);
-                circleView.addDot(new Dot(Color.rgb(rgb[0],rgb[1],rgb[2]), p));
+                double degrees = Math.toDegrees(i * getStep());
+                int[] rgb = hcl2rgb(degrees / 360, 100, 100, 0);
+                dots.add(new Dot(rgb));
 
             }
 
+            return dots;
+        }
+
+        private void drawDots(List<Dot> dots){
+
+            relativeLayout.removeAllViews();
+
+            CircleView circleView = new CircleView(rootView.getContext());
+            int offset = (int)Math.round((getRotation()/360.0)* getLedCount());
+            for(int i =0;i<dots.size();i++){
+                int index = (i+offset)% getLedCount();
+                long x = Math.round(width/2 + radius * Math.cos(i * getStep()) - ledSize*3);
+                long y = Math.round(height * 0.30 + radius * Math.sin(i * getStep()) - ledSize / 2);
+
+                Point p = new Point();
+                p.set((int) x, (int) y);
+                Dot dot  = dots.get(index);
+                dot.setPoint(p);
+                circleView.addDot(dot);
+            }
+            postService.writeString(arrayString(circleView.getDots()));
             relativeLayout.addView(circleView);
         }
 
+        public String arrayString(List<Dot> dots){
+            char[] characters =  new char[dots.size()*3];
+            int counter =0;
+            for(int i=0;i<dots.size();i++) {
+                characters[counter] = ((char) dots.get(i).getRgb()[0]);
+                characters[counter++] = ((char) dots.get(i).getRgb()[1]);
+                characters[counter++] = ((char) dots.get(i).getRgb()[2]);
+                counter++;
+            }
+            return new String(characters);
+        }
 
+        public double getStep(){
+            return (2*Math.PI)/getLedCount();
+        }
+        private int getRotation(){
+            return this.seekBar.getProgress();
+        }
+
+        private int getLedCount(){
+            return Integer.parseInt(ledNumber.getText().toString());
+        }
     }
 
     /**
@@ -200,7 +257,7 @@ public class ColourPicker extends AppCompatActivity {
         @Override
         public int getCount() {
             // Show 3 total pages.
-            return 3;
+            return 1;
         }
 
         @Override
@@ -208,12 +265,9 @@ public class ColourPicker extends AppCompatActivity {
             switch (position) {
                 case 0:
                     return "SECTION 1";
-                case 1:
-                    return "SECTION 2";
-                case 2:
-                    return "SECTION 3";
             }
             return null;
         }
     }
 }
+

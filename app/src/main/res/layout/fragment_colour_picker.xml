@@ -17,7 +17,8 @@
         android:id="@+id/ledNumber"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:text="24" />
+        android:text="24"
+        android:maxEms="360"/>
 
     <Button
         android:layout_width="wrap_content"
@@ -34,7 +35,8 @@
         android:layout_height="wrap_content"
         android:id="@+id/seekBar"
         android:layout_below="@+id/ledNumber"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:max="360"/>
 
     <FrameLayout
         android:id="@+id/circleLayout"
