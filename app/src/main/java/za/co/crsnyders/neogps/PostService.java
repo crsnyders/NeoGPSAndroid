@@ -1,6 +1,8 @@
 package za.co.crsnyders.neogps;
 
 
+import android.widget.Toast;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.InputStream;
@@ -34,6 +36,7 @@ public class PostService {
 
         } catch (Exception e) {
             e.printStackTrace();
+           // Toast.makeText(this,"Some messea",Toast.LENGTH_SHORT).
         } finally {
             urlConnection.disconnect();
         }
@@ -41,11 +44,13 @@ public class PostService {
 
     public void writeString(String ledString){
         try{
-        writer.write("{\"leds\": "+ledString+"}");
+            String message  = "{\"leds\": \""+ledString+"\"}";
+            writer.write(message);
             writer.flush();
+            System.out.println(message);
     } catch (Exception e) {
     } finally {
-        urlConnection.disconnect();
+            urlConnection.disconnect();
     }
     }
 
