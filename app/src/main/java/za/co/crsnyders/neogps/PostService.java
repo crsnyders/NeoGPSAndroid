@@ -15,7 +15,7 @@ import java.net.URLConnection;
  */
 public class PostService {
 
-    private HttpURLConnection connection;
+    
     private HttpURLConnection urlConnection;
 
     private OutputStreamWriter writer;
