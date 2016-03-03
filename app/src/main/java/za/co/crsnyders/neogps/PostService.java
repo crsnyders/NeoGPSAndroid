@@ -1,6 +1,9 @@
 package za.co.crsnyders.neogps;
 
 
+import android.app.IntentService;
+import android.content.Intent;
+import android.os.AsyncTask;
 import android.widget.Toast;
 
 import java.io.BufferedInputStream;
@@ -15,14 +18,15 @@ import java.net.URLConnection;
 /**
  * Created by csnyders on 2016/02/29.
  */
-public class PostService {
+public class PostService extends IntentService {
 
-    
+
     private HttpURLConnection urlConnection;
 
     private OutputStreamWriter writer;
-    public PostService() {
 
+    public PostService() {
+        super("PostIntentService");
 
         try {
             URL url = new URL("http://192.168.4.1:80");
@@ -32,26 +36,31 @@ public class PostService {
 
             OutputStream out = new BufferedOutputStream(urlConnection.getOutputStream());
             writer = new OutputStreamWriter(out);
-
+            Toast.makeText(this.getApplicationContext(),"Connected to NeoGPS", Toast.LENGTH_SHORT).show();
 
         } catch (Exception e) {
             e.printStackTrace();
-           // Toast.makeText(this,"Some messea",Toast.LENGTH_SHORT).
+            Toast.makeText(this.getApplicationContext(), "Failed to connect", Toast.LENGTH_SHORT).show();
         } finally {
             urlConnection.disconnect();
         }
     }
 
-    public void writeString(String ledString){
-        try{
-            String message  = "{\"leds\": \""+ledString+"\"}";
+    @Override
+    protected void onHandleIntent(Intent intent) {
+
+    }
+
+    public void writeString(String ledString) {
+        try {
+            String message = "{\"leds\": \"" + ledString + "\"}";
             writer.write(message);
             writer.flush();
             System.out.println(message);
-    } catch (Exception e) {
-    } finally {
+        } catch (Exception e) {
+        } finally {
             urlConnection.disconnect();
-    }
+        }
     }
 
 }
