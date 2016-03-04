@@ -2,8 +2,11 @@ package za.co.crsnyders.neogps;
 
 import android.graphics.Color;
 import android.graphics.Point;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
@@ -14,15 +17,19 @@ import android.support.v4.view.ViewPager;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.Display;
+import android.view.DragEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -198,7 +205,7 @@ public class ColourPicker extends AppCompatActivity {
             relativeLayout.removeAllViews();
 
             CircleView circleView = new CircleView(rootView.getContext());
-            int offset = (int)Math.round((getRotation()/360.0)* getLedCount());
+            int offset = (int)Math.round((getRotation() / 360.0) * getLedCount());
             for(int i =0;i<dots.size();i++){
                 int index = (i+offset)% getLedCount();
                 long x = Math.round(width/2 + radius * Math.cos(i * getStep()) - ledSize*3);
@@ -211,7 +218,26 @@ public class ColourPicker extends AppCompatActivity {
                 circleView.addDot(dot);
             }
             postService.writeString(arrayString(circleView.getDots()));
-            relativeLayout.addView(circleView);
+            //relativeLayout.addView(circleView);
+            GradientDrawable d = (GradientDrawable)ContextCompat.getDrawable(this.getContext(), R.drawable.dot_bg);
+            d.setColor(Color.RED);
+
+
+            ImageView image = new ImageView(this.getContext());
+            image.setImageDrawable(d);
+            LinearLayout.LayoutParams parms = new LinearLayout.LayoutParams(100,100);
+
+            image.setLayoutParams(parms);
+            image.requestLayout();
+
+           image.setOnDragListener(new View.OnDragListener() {
+               @Override
+               public boolean onDrag(View v, DragEvent event) {
+                   System.out.println("Drag Event: "+event.getAction());
+                   return false;
+               }
+           });
+            relativeLayout.addView(image);
         }
 
         public String arrayString(List<Dot> dots){

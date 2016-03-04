@@ -36,11 +36,12 @@ public class PostService extends IntentService {
 
             OutputStream out = new BufferedOutputStream(urlConnection.getOutputStream());
             writer = new OutputStreamWriter(out);
-            Toast.makeText(this.getApplicationContext(),"Connected to NeoGPS", Toast.LENGTH_SHORT).show();
+
+            Toast.makeText(this,"Connected to NeoGPS", Toast.LENGTH_SHORT).show();
 
         } catch (Exception e) {
             e.printStackTrace();
-            Toast.makeText(this.getApplicationContext(), "Failed to connect", Toast.LENGTH_SHORT).show();
+//            Toast.makeText(this, "Failed to connect", Toast.LENGTH_SHORT).show();
         } finally {
             urlConnection.disconnect();
         }

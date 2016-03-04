@@ -7,7 +7,11 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.shapes.Shape;
+import android.support.v4.content.ContextCompat;
 import android.view.View;
+import android.widget.ImageView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +22,6 @@ public class CircleView extends View {
     private List<Dot> dots = new ArrayList<>();
     public CircleView(Context context) {
         super(context);
-
     }
 
     public List<Dot> getDots(){
@@ -29,11 +32,12 @@ public class CircleView extends View {
     }
     @Override
     protected void onDraw(Canvas canvas) {
-        for(Dot dot : dots) {
+        /*for(Dot dot : dots) {
             Paint paint = new Paint();
             paint.setColor(dot.getColour());
             canvas.drawCircle(dot.getPoint().x, dot.getPoint().y, 50, paint);
         }
+       */
     }
 
 }
