@@ -38,6 +38,8 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
+import za.co.crsnyders.neogps.layout.CircleLayout;
+
 import static za.co.crsnyders.neogps.Utils.hcl2rgb;
 
 public class ColourPicker extends AppCompatActivity {
@@ -117,7 +119,7 @@ public class ColourPicker extends AppCompatActivity {
         private static final String ARG_SECTION_NUMBER = "section_number";
 
         private View rootView;
-        private FrameLayout relativeLayout;
+        private CircleLayout circleLayout;
         private EditText ledNumber;
         private List<Dot> dots;
         private SeekBar seekBar;
@@ -152,7 +154,7 @@ public class ColourPicker extends AppCompatActivity {
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
             this.rootView = inflater.inflate(R.layout.fragment_colour_picker, container, false);
-            this.relativeLayout = (FrameLayout)this.rootView.findViewById(R.id.circleLayout);
+            this.circleLayout = (CircleLayout)this.rootView.findViewById(R.id.circleLayout);
             this.ledNumber = (EditText) this.rootView.findViewById(R.id.ledNumber);
             this.seekBar = (SeekBar)this.rootView.findViewById(R.id.seekBar);
             DisplayMetrics metrics = this.rootView.getContext().getResources().getDisplayMetrics();
@@ -202,7 +204,7 @@ public class ColourPicker extends AppCompatActivity {
 
         private void drawDots(List<Dot> dots){
 
-            relativeLayout.removeAllViews();
+            circleLayout.removeAllViews();
 
             CircleView circleView = new CircleView(rootView.getContext());
             int offset = (int)Math.round((getRotation() / 360.0) * getLedCount());
@@ -218,14 +220,25 @@ public class ColourPicker extends AppCompatActivity {
                 circleView.addDot(dot);
             }
             postService.writeString(arrayString(circleView.getDots()));
-            //relativeLayout.addView(circleView);
+            //circleLayout.addView(circleView);
             GradientDrawable d = (GradientDrawable)ContextCompat.getDrawable(this.getContext(), R.drawable.dot_bg);
             d.setColor(Color.RED);
 
 
             ImageView image = new ImageView(this.getContext());
             image.setImageDrawable(d);
-            LinearLayout.LayoutParams parms = new LinearLayout.LayoutParams(100,100);
+
+            circleLayout.addView(image);
+
+            GradientDrawable d2 = (GradientDrawable)ContextCompat.getDrawable(this.getContext(), R.drawable.dot_bg);
+            d2.setColor(Color.GREEN);
+
+
+            ImageView image2 = new ImageView(this.getContext());
+            image2.setImageDrawable(d2);
+
+            circleLayout.addView(image2);
+           /* LinearLayout.LayoutParams parms = new LinearLayout.LayoutParams(100,100);
 
             image.setLayoutParams(parms);
             image.requestLayout();
@@ -236,8 +249,7 @@ public class ColourPicker extends AppCompatActivity {
                    System.out.println("Drag Event: "+event.getAction());
                    return false;
                }
-           });
-            relativeLayout.addView(image);
+           });*/
         }
 
         public String arrayString(List<Dot> dots){

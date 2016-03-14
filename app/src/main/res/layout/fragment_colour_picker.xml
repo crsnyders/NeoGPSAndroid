@@ -38,7 +38,7 @@
         android:layout_centerHorizontal="true"
         android:max="360"/>
 
-    <FrameLayout
+    <za.co.crsnyders.neogps.layout.CircleLayout
         android:id="@+id/circleLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -47,7 +47,7 @@
         android:layout_alignParentBottom="true"
         android:layout_below="@+id/seekBar">
 
-    </FrameLayout>
+    </za.co.crsnyders.neogps.layout.CircleLayout>
 
 
 </RelativeLayout>
