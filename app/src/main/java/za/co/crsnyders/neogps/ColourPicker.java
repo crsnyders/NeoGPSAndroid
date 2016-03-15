@@ -229,12 +229,23 @@ public class ColourPicker extends AppCompatActivity {
 
                 ImageView image = new ImageView(this.getContext());
                 image.setImageDrawable(d);
-                image.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        System.out.println(v);
-                    }
-                });
+
+                image.setOnTouchListener(new View.OnTouchListener() {
+                   @Override
+                   public boolean onTouch(View v, MotionEvent event) {
+                       switch (event.getAction()) {
+                           case MotionEvent.ACTION_MOVE:
+                               System.out.println("MOVE");
+                               float newX = event.getX();
+                               float newY = event.getY();
+                               float oldY = event.getHistoricalY(event.getPointerCount()-1,1);
+                               float oldX = event.getHistoricalX(event.getPointerCount()-1,1);
+                               return true;
+                       }
+                       return false;
+                   }
+               });
+
                 circleLayout.addView(image);
             }
            /* LinearLayout.LayoutParams parms = new LinearLayout.LayoutParams(100,100);
