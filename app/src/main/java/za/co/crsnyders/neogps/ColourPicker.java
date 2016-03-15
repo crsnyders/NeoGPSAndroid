@@ -208,7 +208,7 @@ public class ColourPicker extends AppCompatActivity {
 
             CircleView circleView = new CircleView(rootView.getContext());
             int offset = (int)Math.round((getRotation() / 360.0) * getLedCount());
-            for(int i =0;i<dots.size();i++){
+            /*for(int i =0;i<dots.size();i++){
                 int index = (i+offset)% getLedCount();
                 long x = Math.round(width/2 + radius * Math.cos(i * getStep()) - ledSize*3);
                 long y = Math.round(height * 0.30 + radius * Math.sin(i * getStep()) - ledSize / 2);
@@ -218,26 +218,25 @@ public class ColourPicker extends AppCompatActivity {
                 Dot dot  = dots.get(index);
                 dot.setPoint(p);
                 circleView.addDot(dot);
-            }
-            postService.writeString(arrayString(circleView.getDots()));
+            }*/
+            //postService.writeString(arrayString(circleView.getDots()));
             //circleLayout.addView(circleView);
-            GradientDrawable d = (GradientDrawable)ContextCompat.getDrawable(this.getContext(), R.drawable.dot_bg);
-            d.setColor(Color.RED);
+            for(int i =0;i<dots.size();i++) {
+                Dot dot  = dots.get((i+offset)%getLedCount());
+                GradientDrawable d = (GradientDrawable) ContextCompat.getDrawable(this.getContext(), R.drawable.dot_bg);
+                d.setColor(dot.getColour());
 
 
-            ImageView image = new ImageView(this.getContext());
-            image.setImageDrawable(d);
-
-            circleLayout.addView(image);
-
-            GradientDrawable d2 = (GradientDrawable)ContextCompat.getDrawable(this.getContext(), R.drawable.dot_bg);
-            d2.setColor(Color.GREEN);
-
-
-            ImageView image2 = new ImageView(this.getContext());
-            image2.setImageDrawable(d2);
-
-            circleLayout.addView(image2);
+                ImageView image = new ImageView(this.getContext());
+                image.setImageDrawable(d);
+                image.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        System.out.println(v);
+                    }
+                });
+                circleLayout.addView(image);
+            }
            /* LinearLayout.LayoutParams parms = new LinearLayout.LayoutParams(100,100);
 
             image.setLayoutParams(parms);

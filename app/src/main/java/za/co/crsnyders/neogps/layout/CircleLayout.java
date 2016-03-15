@@ -10,12 +10,15 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
 
+import za.co.crsnyders.neogps.Dot;
+
 /**
  * Created by csnyders on 2016/03/08.
  */
 public class CircleLayout extends ViewGroup{
 
     int deviceWidth;
+    int deviceHeight;
 
     public CircleLayout(Context context) {
         this(context, null, 0);
@@ -39,7 +42,32 @@ public class CircleLayout extends ViewGroup{
         Point deviceDisplay = new Point();
         display.getSize(deviceDisplay);
         deviceWidth = deviceDisplay.x;
+        deviceHeight = deviceWidth;
     }
+
+    @Override
+    protected void onLayout(boolean changed, int l, int t, int r, int b) {
+        final int count = getChildCount();
+        double step = (2*Math.PI)/count;
+        int curWidth, curHeight, curLeft, curTop, maxHeight;
+        int radius = 400;
+
+        for(int i =0;i<count;i++){
+            int index = (i)% count;
+            View child = getChildAt(i);
+            int ledSize = 100;//child.getWidth();
+
+            long x = Math.round(deviceWidth/2 + radius * Math.cos(i * step) - ledSize/2);
+            long y = Math.round(deviceHeight/2 + radius * Math.sin(i * step) - ledSize / 2);
+
+
+            if (child.getVisibility() == GONE)
+                return;
+            child.layout((int)x, (int)y, (int)x + ledSize, (int)y + ledSize);
+        }
+    }
+
+    /*
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
         final int count = getChildCount();
@@ -81,8 +109,8 @@ public class CircleLayout extends ViewGroup{
             curLeft += curWidth;
         }
     }
-
-    @Override
+*/
+   /* @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         int count = getChildCount();
         // Measurement will ultimately be computing these values.
@@ -122,5 +150,5 @@ public class CircleLayout extends ViewGroup{
         setMeasuredDimension(resolveSizeAndState(maxWidth, widthMeasureSpec, childState),
                 resolveSizeAndState(maxHeight, heightMeasureSpec, childState << MEASURED_HEIGHT_STATE_SHIFT));
 
-    }
+    }*/
 }
