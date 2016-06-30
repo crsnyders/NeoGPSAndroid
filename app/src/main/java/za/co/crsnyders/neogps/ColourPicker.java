@@ -1,5 +1,6 @@
 package za.co.crsnyders.neogps;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.drawable.Drawable;
@@ -83,6 +84,7 @@ public class ColourPicker extends AppCompatActivity {
                         .setAction("Action", null).show();
             }
         });
+        startService(new Intent(this, MapsNotificationListener.class));
     }
 
 
