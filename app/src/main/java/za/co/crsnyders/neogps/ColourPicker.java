@@ -41,6 +41,8 @@ import java.util.List;
 import za.co.crsnyders.neogps.layout.CircleLayout;
 
 import static za.co.crsnyders.neogps.Utils.hcl2rgb;
+import android.content.*;
+import android.os.*;
 
 public class ColourPicker extends AppCompatActivity {
 
@@ -83,6 +85,9 @@ public class ColourPicker extends AppCompatActivity {
                         .setAction("Action", null).show();
             }
         });
+		
+		System.out.println("starting service");
+		startService(new Intent(this, MapsNotificationListener.class));
     }
 
 
