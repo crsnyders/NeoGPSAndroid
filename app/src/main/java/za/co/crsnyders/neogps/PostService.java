@@ -12,6 +12,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
+import java.net.InetSocketAddress;
+import java.net.Proxy;
+import java.net.Socket;
 import java.net.URL;
 import java.net.URLConnection;
 
@@ -29,13 +32,10 @@ public class PostService extends IntentService {
         super("PostIntentService");
 
         try {
-            URL url = new URL("http://192.168.4.1:80");
-            urlConnection = (HttpURLConnection) url.openConnection();
-            urlConnection.setDoOutput(true);
-            urlConnection.setChunkedStreamingMode(0);
-
-            OutputStream out = new BufferedOutputStream(urlConnection.getOutputStream());
-            writer = new OutputStreamWriter(out);
+            Socket  s = new Socket(Proxy.NO_PROXY);
+            s.connect(new InetSocketAddress("192.168.4.1",80));
+            s.isConnected();
+            writer = new OutputStreamWriter(s.getOutputStream());
 
             Toast.makeText(this,"Connected to NeoGPS", Toast.LENGTH_SHORT).show();
 
