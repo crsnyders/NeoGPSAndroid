@@ -19,34 +19,10 @@ import java.text.*;
  */
 public class MapsNotificationListener  extends NotificationListenerService
 {
-
-	@Override
-	public void onCreate()
-	{
-		// TODO: Implement this method
-		super.onCreate();
-		System.out.println("listener service started");
-	}
-
-	
-	@Override
-	public IBinder onBind(Intent intent)
-	{
-		// TODO: Implement this method
-		return super.onBind(intent);
-	}
-	
 	
     @Override
     public void onNotificationPosted(StatusBarNotification sbn, RankingMap rankingMap) {
         if(sbn.getPackageName().equals("com.google.android.apps.maps")){
-			RemoteViews bigContent = sbn.getNotification().bigContentView;
-			/*for(String key : extras.){
-			 System.out.println();
-			 Log.d("noti",key+" : "+extras.get( key));
-			 }
-			 String text = extras.getCharSequence("android.text").toString();*/
-			 
 			System.out.println(this.getText(sbn.getNotification()));
 		}
 		
@@ -58,14 +34,6 @@ public class MapsNotificationListener  extends NotificationListenerService
         System.out.println("updated");
 		super.onNotificationRankingUpdate(rankingMap);
     }
-
-	@Override
-	public void onNotificationRemoved(StatusBarNotification sbn)
-	{
-	    System.out.println("removed");
-		// TODO: Implement this method
-		super.onNotificationRemoved(sbn);
-	}
 	
 	public List<String> getText(Notification notification)
 	{
