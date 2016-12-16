@@ -23,7 +23,13 @@ public class MapsNotificationListener  extends NotificationListenerService
     @Override
     public void onNotificationPosted(StatusBarNotification sbn, RankingMap rankingMap) {
         if(sbn.getPackageName().equals("com.google.android.apps.maps")){
-			System.out.println(this.getText(sbn.getNotification()));
+			System.out.println();
+			List<String> direction =this.getText(sbn.getNotification());
+			System.out.println(direction);
+			Intent i = new Intent();
+			i.setAction("za.co.crsnyders.neopixel.direction_update");
+			i.putExtra("za.co.crsnyders.neopixel.direction",direction.toArray());
+			sendBroadcast(i);
 		}
 		
         super.onNotificationPosted(sbn, rankingMap);

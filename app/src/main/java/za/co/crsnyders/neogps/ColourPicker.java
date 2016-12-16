@@ -43,8 +43,21 @@ import za.co.crsnyders.neogps.layout.CircleLayout;
 import static za.co.crsnyders.neogps.Utils.hcl2rgb;
 import android.content.*;
 import android.os.*;
+import android.support.v4.content.*;
+import android.widget.*;
+import java.util.*;
 
-public class ColourPicker extends AppCompatActivity {
+public class ColourPicker extends AppCompatActivity implements IntentHandler
+{
+
+	@Override
+	public void handleIntent(Intent intent)
+	{
+		String direction =  intent.getExtras().getString("directions");
+		DirectionLogFragment.getInstance().add(direction);
+		
+	}
+	
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -60,11 +73,14 @@ public class ColourPicker extends AppCompatActivity {
      * The {@link ViewPager} that will host the section contents.
      */
     private ViewPager mViewPager;
+	
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_colour_picker);
+		
+		
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -83,11 +99,17 @@ public class ColourPicker extends AppCompatActivity {
             public void onClick(View view) {
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
+						DirectionLogFragment.getInstance().add("test");
+						
             }
         });
 		
 		System.out.println("starting service");
 		startService(new Intent(this, MapsNotificationListener.class));
+		
+		IntentFilter statusIntentFilter = new IntentFilter();
+		statusIntentFilter.addAction("za.co.crsnyders.neopixel.direction_update");
+		LocalBroadcastManager.getInstance(this).registerReceiver(new IntentManager(this),statusIntentFilter);
     }
 
 
@@ -113,7 +135,47 @@ public class ColourPicker extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    /**
+	public static class DirectionLogFragment extends Fragment{
+		private static final String ARG_SECTION_NUMBER = "section_number";
+		private View rootView;
+		private ListView listview;
+		private ArrayAdapter<String> adapter;
+		private static DirectionLogFragment fragment;
+		
+		private DirectionLogFragment(){
+			
+		};
+		public static DirectionLogFragment newInstance(int sectionNumber) {
+            if(fragment == null){
+			fragment = new DirectionLogFragment();
+            Bundle args = new Bundle();
+            args.putInt(ARG_SECTION_NUMBER, sectionNumber);
+            fragment.setArguments(args);
+			}
+			
+            return fragment;
+        }
+		public static DirectionLogFragment getInstance(){
+			return fragment;
+		}
+		
+		public void add(String text){
+			this.adapter.add(text);
+			this.adapter.notifyDataSetChanged();
+		}
+
+        @Override
+        public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                                 Bundle savedInstanceState) {
+            this.rootView = inflater.inflate(R.layout.fragment_direction_log, container, false);
+            this.listview = (ListView)this.rootView.findViewById(R.id.textLog);
+			this.adapter = new TextAdapter<>(this.rootView.getContext());
+			this.listview.setAdapter(adapter);
+			
+            return this.rootView;
+        }
+		}
+		/**
      * A placeholder fragment containing a simple view.
      */
     public static class PlaceholderFragment extends Fragment implements View.OnClickListener{
@@ -148,6 +210,8 @@ public class ColourPicker extends AppCompatActivity {
             fragment.setArguments(args);
             return fragment;
         }
+		
+		
 
         @Override
         public void onClick(View v) {
@@ -289,6 +353,8 @@ public class ColourPicker extends AppCompatActivity {
         private int getLedCount(){
             return Integer.parseInt(ledNumber.getText().toString());
         }
+		
+	
     }
 
     /**
@@ -305,13 +371,18 @@ public class ColourPicker extends AppCompatActivity {
         public Fragment getItem(int position) {
             // getItem is called to instantiate the fragment for the given page.
             // Return a PlaceholderFragment (defined as a static inner class below).
-            return PlaceholderFragment.newInstance(position + 1);
+			if(position ==0){
+				return PlaceholderFragment.newInstance(position + 1);
+			}else{
+				DirectionLogFragment f = DirectionLogFragment.newInstance(position + 1);
+				return f;
+			}
         }
 
         @Override
         public int getCount() {
             // Show 3 total pages.
-            return 1;
+            return 2;
         }
 
         @Override
@@ -319,9 +390,54 @@ public class ColourPicker extends AppCompatActivity {
             switch (position) {
                 case 0:
                     return "SECTION 1";
+				case 1:
+					return "SECTION 2";
             }
             return null;
         }
     }
 }
+
+class IntentManager extends BroadcastReceiver {
+
+	private IntentHandler handler;
+
+	public IntentManager(IntentHandler handler){
+		this.handler = handler;
+
+	}
+
+	@Override
+	public void onReceive(Context p1, Intent p2) {
+		handler.handleIntent(p2);
+	}
+
+
+}
+
+class StableArrayAdapter extends ArrayAdapter<String> {
+
+		HashMap<String, Integer> mIdMap = new HashMap<String, Integer>();
+
+		public StableArrayAdapter(Context context, int textViewResourceId) {
+			super(context, textViewResourceId);
+		}
+		
+		@Override
+		public void add(String item){
+		 super.add(item);
+		}
+
+		@Override
+		public long getItemId(int position) {
+			String item = getItem(position);
+			return mIdMap.get(item);
+		}
+
+		@Override
+		public boolean hasStableIds() {
+			return true;
+		}
+
+	}
 
